@@ -65,24 +65,15 @@ function initial() {
       });
 
       new Role({
-        name: "moderator"
+        name: "service provider"
       }).save(err => {
         if (err) {
           console.log("error", err);
         }
 
-        console.log("added 'moderator' to roles collection");
+        console.log("added 'service provider' to roles collection");
       });
 
-      new Role({
-        name: "admin"
-      }).save(err => {
-        if (err) {
-          console.log("error", err);
-        }
-
-        console.log("added 'admin' to roles collection");
-      });
     }
   });
 }
