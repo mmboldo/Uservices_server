@@ -2,6 +2,7 @@ const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const Category = db.category;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -110,6 +111,16 @@ exports.signup = (req, res) => {
   });
 };
 
+exports.categories = (req, res) => {
+  Category.find(function (err, categories) {
+    if(err) {
+      console.log(err);
+    } else {
+      res.json(categories);
+    }
+  });
+}
+
 exports.signin = (req, res) => {
   User.findOne({
     email: req.body.email
@@ -159,3 +170,5 @@ exports.signin = (req, res) => {
       });
     });
 };
+
+

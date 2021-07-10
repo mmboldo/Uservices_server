@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const categoryRoutes = express.Router();
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 const Role = db.role;
+const Category = db.category;
 
 db.mongoose
   .connect(`mongodb+srv://myadmin:myadmin@cluster0.5nwxg.mongodb.net/tutorial5?retryWrites=true&w=majority`, {
@@ -76,4 +78,89 @@ function initial() {
 
     }
   });
+
+  Category.estimatedDocumentCount((err, count) => {
+    if (!err && count === 0) {
+      new Category({
+        name: "Pet"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'pet' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Housekeep"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'housekeep' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Beauty"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'beauty' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Appliance Repair"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'appliance repair' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "House Repair"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'house repair' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Personal Care"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'personal care' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Health Care"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'health care' to category collection");
+      });
+    }
+    if (!err && count === 0) {
+      new Category({
+        name: "Other Services"
+      }).save(err => {
+        if (err) {
+          console.log("error", err);
+        }
+        console.log("added 'other services' to category collection");
+      });
+    }
+
+  });
+
 }
