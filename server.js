@@ -1,8 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const categoryRoutes = express.Router();
+const Routes = express.Router();
 
+var jwt = require("jsonwebtoken");
+var bcrypt = require("bcryptjs");
 
 const app = express();
 
@@ -21,8 +23,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
+const User = require("./app/models/user.model");
 const Role = db.role;
 const Category = db.category;
+
 
 db.mongoose
   .connect(`mongodb+srv://myadmin:myadmin@cluster0.5nwxg.mongodb.net/tutorial5?retryWrites=true&w=majority`, {
@@ -47,11 +51,161 @@ app.get("/", (req, res) => {
 require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 
+// route to get all users
+app.get("/users", (req, res) => {
+  User.find(function (err, users) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(users);
+    }
+  });
+});
+
+// route to get user by id
+app.get("/users/:id", (req, res) => {
+  User.findById(req.params.id, function (err, user) {
+    res.json(user);
+  });
+});
+
+//route to update the User Profile
+app.post('/update/:id', (req, res) => {
+    User.findById(req.params.id, function (err, user) {
+    if (!user) {
+      res.status(404).send('data is not found');
+    } else {
+      user.firstName = req.body.firstName,
+      user.lastName = req.body.lastName,
+      user.email = req.body.email,
+      user.address = req.body.address,
+      user.province = req.body.province,
+      user.serviceProvider = req.body.serviceProvider,
+      user.password = bcrypt.hashSync(req.body.password, 8)
+
+      user.save((err, user) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+        if(req.body.serviceProvider === true) {
+          if (req.body.roles) {
+            Role.find(
+              {
+                name: { $in: req.body.roles }
+              },
+              (err, roles) => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
+      
+                user.roles = roles.map(role => role._id);
+                user.save(err => {
+                  if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                  }
+      
+                  res.send({ message: "User was registered successfully1!" });
+                });
+              }
+            );
+          } else {
+            Role.findOne({ name: "service provider" }, (err, role) => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+      
+              user.roles = [role._id];
+              user.save(err => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
+      
+                res.send({ message: "User was registered successfully2!" });
+              });
+            });
+          }
+        } else {
+          if (req.body.roles) {
+            Role.find(
+              {
+                name: { $in: req.body.roles }
+              },
+              (err, roles) => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
+      
+                user.roles = roles.map(role => role._id);
+                user.save(err => {
+                  if (err) {
+                    res.status(500).send({ message: err });
+                    return;
+                  }
+      
+                  res.send({ message: "User was registered successfully3!" });
+                });
+              }
+            );
+          } else {
+            Role.findOne({ name: "user" }, (err, role) => {
+              if (err) {
+                res.status(500).send({ message: err });
+                return;
+              }
+      
+              user.roles = [role._id];
+              user.save(err => {
+                if (err) {
+                  res.status(500).send({ message: err });
+                  return;
+                }
+      
+                res.send({ message: "User was registered successfully4!" });
+              });
+            });
+          }
+        }
+    
+        
+      });
+    }
+  })
+})
+
+//route to get the roles
+app.get("/roles", (req, res) => {
+  Role.find(function (err, roles) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(roles);
+    }
+  });
+});
+
+
+// find role by id
+// route to get user by id
+app.get("/roles/:id", (req, res) => {
+  Role.findById(req.params.id, function (err, role) {
+    res.json(role);
+  });
+});
+
+
+
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
 
 function initial() {
   Role.estimatedDocumentCount((err, count) => {

@@ -23,7 +23,7 @@ exports.signup = (req, res) => {
       res.status(500).send({ message: err });
       return;
     }
-    if(req.body.serviceProvider === "Yes") {
+    if(req.body.serviceProvider === true) {
       if (req.body.roles) {
         Role.find(
           {
@@ -120,6 +120,8 @@ exports.categories = (req, res) => {
     }
   });
 }
+
+
 
 exports.signin = (req, res) => {
   User.findOne({

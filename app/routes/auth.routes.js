@@ -23,4 +23,6 @@ module.exports = function(app) {
 
   app.get("/api/auth/categories", controller.categories);
 
+
+
 };
