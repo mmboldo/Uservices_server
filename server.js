@@ -8,11 +8,19 @@ var bcrypt = require("bcryptjs");
 
 const app = express();
 
+global.__basedir = __dirname;
+
+
 app.use(express.json());
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:8080"
 };
+
+const initRoutes = require("./app/routes");
+
+app.use(express.urlencoded({ extended: true }));
+initRoutes(app);
 
 app.use(cors(corsOptions));
 
