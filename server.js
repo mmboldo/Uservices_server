@@ -26,6 +26,7 @@ const db = require("./app/models");
 const User = require("./app/models/user.model");
 const Role = db.role;
 const Category = db.category;
+const ServiceProvider = db.serviceProvider;
 
 
 db.mongoose
@@ -71,24 +72,24 @@ app.get("/users/:id", (req, res) => {
 
 //route to update the User Profile
 app.post('/update/:id', (req, res) => {
-    User.findById(req.params.id, function (err, user) {
+  User.findById(req.params.id, function (err, user) {
     if (!user) {
       res.status(404).send('data is not found');
     } else {
       user.firstName = req.body.firstName,
-      user.lastName = req.body.lastName,
-      user.email = req.body.email,
-      user.address = req.body.address,
-      user.province = req.body.province,
-      user.serviceProvider = req.body.serviceProvider,
-      user.password = bcrypt.hashSync(req.body.password, 8)
+        user.lastName = req.body.lastName,
+        user.email = req.body.email,
+        user.address = req.body.address,
+        user.province = req.body.province,
+        user.serviceProvider = req.body.serviceProvider,
+        user.password = bcrypt.hashSync(req.body.password, 8)
 
       user.save((err, user) => {
         if (err) {
           res.status(500).send({ message: err });
           return;
         }
-        if(req.body.serviceProvider === true) {
+        if (req.body.serviceProvider === true) {
           if (req.body.roles) {
             Role.find(
               {
@@ -99,14 +100,14 @@ app.post('/update/:id', (req, res) => {
                   res.status(500).send({ message: err });
                   return;
                 }
-      
+
                 user.roles = roles.map(role => role._id);
                 user.save(err => {
                   if (err) {
                     res.status(500).send({ message: err });
                     return;
                   }
-      
+
                   res.send({ message: "User was registered successfully1!" });
                 });
               }
@@ -117,14 +118,15 @@ app.post('/update/:id', (req, res) => {
                 res.status(500).send({ message: err });
                 return;
               }
-      
+
               user.roles = [role._id];
+
               user.save(err => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
-      
+
                 res.send({ message: "User was registered successfully2!" });
               });
             });
@@ -140,14 +142,14 @@ app.post('/update/:id', (req, res) => {
                   res.status(500).send({ message: err });
                   return;
                 }
-      
+
                 user.roles = roles.map(role => role._id);
                 user.save(err => {
                   if (err) {
                     res.status(500).send({ message: err });
                     return;
                   }
-      
+
                   res.send({ message: "User was registered successfully3!" });
                 });
               }
@@ -158,21 +160,21 @@ app.post('/update/:id', (req, res) => {
                 res.status(500).send({ message: err });
                 return;
               }
-      
+
               user.roles = [role._id];
               user.save(err => {
                 if (err) {
                   res.status(500).send({ message: err });
                   return;
                 }
-      
+
                 res.send({ message: "User was registered successfully4!" });
               });
             });
           }
         }
-    
-        
+
+
       });
     }
   })
@@ -198,7 +200,26 @@ app.get("/roles/:id", (req, res) => {
   });
 });
 
-
+//route to register serviceProfiderProfile, register user id as reference
+app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
+  const serviceProvider = new ServiceProvider({
+    subcategory: req.body.subcategory,
+    description: req.body.description,
+    price: req.body.price,
+    availability: req.body.availability
+  });
+  serviceProvider.save((err, serviceProvider) => {
+    try {
+      if (req.params.id && req.params.id2) {
+        serviceProvider.user = [req.params.id];
+        serviceProvider.category = [req.params.id2];
+        serviceProvider.save();
+      }
+    } catch(err) {
+      res.status(500).send({ message: err });
+    }
+  })
+});
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

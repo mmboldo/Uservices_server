@@ -6,7 +6,19 @@ const ServiceProvider = mongoose.model(
     subcategory: String, 
     description: String,
     price: String,
-    availability: String
+    availability: String,
+    user: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    category: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category"
+      }
+    ]
   })
 );
 
