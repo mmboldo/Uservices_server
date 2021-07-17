@@ -1,7 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const Routes = express.Router();
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -32,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 const User = require("./app/models/user.model");
+const { categories } = require("./app/controllers/auth.controller");
 const Role = db.role;
 const Category = db.category;
 const ServiceProvider = db.serviceProvider;
@@ -208,7 +208,7 @@ app.get("/roles/:id", (req, res) => {
   });
 });
 
-//route to register serviceProfiderProfile, register user id as reference
+//route to register Service Provider Profile, register user id as reference
 app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
   const serviceProvider = new ServiceProvider({
     subcategory: req.body.subcategory,
@@ -228,6 +228,15 @@ app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
     }
   })
 });
+
+//find category by name
+app.get("/categories/:name", (req, res) => {
+  Category.findOne({name: req.params.name}, function (err, category) {
+    res.json(category);
+  });
+});
+
+
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
