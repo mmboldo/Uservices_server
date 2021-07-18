@@ -13,7 +13,7 @@ global.__basedir = __dirname;
 app.use(express.json());
 
 var corsOptions = {
-  origin: "http://localhost:8080"
+  origin: "http://localhost:8081"
 };
 
 const initRoutes = require("./app/routes");
@@ -223,7 +223,7 @@ app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
         serviceProvider.category = [req.params.id2];
         serviceProvider.save();
       }
-    } catch(err) {
+    } catch (err) {
       res.status(500).send({ message: err });
     }
   })
@@ -231,7 +231,7 @@ app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
 
 //find category by name
 app.get("/categories/:name", (req, res) => {
-  Category.findOne({name: req.params.name}, function (err, category) {
+  Category.findOne({ name: req.params.name }, function (err, category) {
     res.json(category);
   });
 });
