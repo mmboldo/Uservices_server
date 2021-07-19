@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const request = require('request');
+
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -12,16 +14,40 @@ global.__basedir = __dirname;
 
 app.use(express.json());
 
+// Part 1 for the File Upload fix
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "*",
 };
+
+app.use(cors(corsOptions));
+
+// Part 2 for the File Upload fix: Proxy for CORS Policy
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+// Part 1 for the File Upload fix: Route usingProxy for CORS Policy
+app.post('/files', (req, res) => {
+  request(
+    { url: 'http://localhost:8080' },
+    (error, response, body) => {
+      if (error || response.statusCode !== 200) {
+        return res.status(500).json({ type: 'error', message: err.message });
+      }
+
+      res.json(JSON.parse(body));
+    }
+  )
+});
+
+
 
 const initRoutes = require("./app/routes");
 
 app.use(express.urlencoded({ extended: true }));
 initRoutes(app);
 
-app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
