@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const request = require('request');
+const multer = require("multer");
 
 
 var jwt = require("jsonwebtoken");
@@ -10,7 +11,6 @@ var bcrypt = require("bcryptjs");
 const app = express();
 
 global.__basedir = __dirname;
-
 
 app.use(express.json());
 
@@ -234,13 +234,42 @@ app.get("/roles/:id", (req, res) => {
   });
 });
 
+//to store images on MongoDb
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "./resources/static/assets/uploadsSPProfile/");
+  },
+  filename: (req, file, callback) => {
+    callback(null, file.originalname)
+  }
+})
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+          cb(null, true);
+      } else {
+          cb(null, false);
+          return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+      }
+  }
+});
+
+
 //route to register Service Provider Profile, register user id as reference
-app.post("/serviceProviderRegister/:id/:id2", (req, res) => {
+app.post("/serviceProviderRegister/:id/:id2", upload.array("profileImages", 4), (req, res, next) => {
+  const reqFiles = [];
+  for (var i = 0; i < req.files.length; i++) {
+      reqFiles.push(req.files[i].filename)
+  }
+
   const serviceProvider = new ServiceProvider({
     subcategory: req.body.subcategory,
     description: req.body.description,
     price: req.body.price,
-    availability: req.body.availability
+    availability: req.body.availability,
+    profileImages: reqFiles
   });
   serviceProvider.save((err, serviceProvider) => {
     try {

@@ -6,7 +6,8 @@ const ServiceProvider = mongoose.model(
     subcategory: String, 
     description: String,
     price: String,
-    availability: [],
+    profileImages: Array, 
+    availability: String,
     user: [
       {
         type: mongoose.Schema.Types.ObjectId,
