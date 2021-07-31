@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ServiceProvider = mongoose.model(
   "ServiceProvider",
   new mongoose.Schema({
-    subcategory: String, 
+    companyName: String, 
     description: String,
     price: String,
     profileImages: Array, 

@@ -237,7 +237,8 @@ app.get("/roles/:id", (req, res) => {
 //to store images on MongoDb
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "./resources/static/assets/uploadsSPProfile/");
+    
+    callback(null, "../Uservices_client/public/uploads");
   },
   filename: (req, file, callback) => {
     callback(null, file.originalname)
@@ -265,7 +266,7 @@ app.post("/serviceProviderRegister/:id/:id2", upload.array("profileImages", 4), 
   }
 
   const serviceProvider = new ServiceProvider({
-    subcategory: req.body.subcategory,
+    companyName: req.body.companyName,
     description: req.body.description,
     price: req.body.price,
     availability: req.body.availability,
@@ -284,6 +285,25 @@ app.post("/serviceProviderRegister/:id/:id2", upload.array("profileImages", 4), 
   })
 });
 
+//route to get the Service Providers Companies Name
+app.get("/serviceProviders", (req, res) => {
+  ServiceProvider.find(function (err, serviceProviders) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(serviceProviders);
+    }
+  })
+})
+
+//route to find the Service Provider by Companies Name
+app.get("/serviceProviders/:companyName", (req, res) => {
+  ServiceProvider.findOne({ companyName: req.params.companyName }, function (err, serviceProvider) {
+    res.json(serviceProvider);
+  });
+})
+
+
 //find category by name
 app.get("/categories/:name", (req, res) => {
   Category.findOne({ name: req.params.name }, function (err, category) {
@@ -291,6 +311,13 @@ app.get("/categories/:name", (req, res) => {
   });
 });
 
+
+//find category by name
+app.get("/categories/:id", (req, res) => {
+  Category.findById(req.params.id, function (err, category) {
+    res.json(category);
+  });
+});
 
 
 // set port, listen for requests
