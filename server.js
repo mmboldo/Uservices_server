@@ -57,7 +57,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 const User = require("./app/models/user.model");
-const { categories } = require("./app/controllers/auth.controller");
+const Complaint = db.complaint;
 const Role = db.role;
 const Category = db.category;
 const ServiceProvider = db.serviceProvider;
@@ -237,7 +237,7 @@ app.get("/roles/:id", (req, res) => {
 //to store images on MongoDb
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    
+
     callback(null, "../Uservices_client/public/uploads");
   },
   filename: (req, file, callback) => {
@@ -248,12 +248,12 @@ const storage = multer.diskStorage({
 var upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
-          cb(null, true);
-      } else {
-          cb(null, false);
-          return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-      }
+    if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
   }
 });
 
@@ -262,7 +262,7 @@ var upload = multer({
 app.post("/serviceProviderRegister/:id/:id2", upload.array("profileImages", 4), (req, res, next) => {
   const reqFiles = [];
   for (var i = 0; i < req.files.length; i++) {
-      reqFiles.push(req.files[i].filename)
+    reqFiles.push(req.files[i].filename)
   }
 
   const serviceProvider = new ServiceProvider({
@@ -312,12 +312,38 @@ app.get("/categories/:name", (req, res) => {
 });
 
 
-//find category by name
+//find category by id
 app.get("/categories/:id", (req, res) => {
   Category.findById(req.params.id, function (err, category) {
     res.json(category);
   });
 });
+
+//route to get the categories
+app.get("/categories", (req, res) => {
+  Category.find(function (err, categories) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(categories);
+    }
+  });
+});
+
+//route to post complaints
+app.post("/complaints/:id", (req, res) => {
+  const complaint = new Complaint({
+    complaintDescription: req.body.complaintDescription,
+    user: [req.params.id]
+  });
+  complaint.save()
+    .then(complaint => {
+      res.status(200).json({ 'complaint': 'complaint added successfully' }); // 200 indicates that the update has been done sucessfully
+    })
+    .catch(err => {
+      res.status(400).send('adding new todo failed.');
+    });
+})
 
 
 // set port, listen for requests
