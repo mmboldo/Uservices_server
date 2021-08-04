@@ -285,13 +285,6 @@ app.post("/serviceProviderRegister/:id/:id2", upload.array("profileImages", 4), 
   })
 });
 
-//route to get current user Service Provider Profiles
-app.get("/serviceProviders/:id", (req, res) => {
-  ServiceProvider.find({user: [req.params.id]}, function (err, serviceProviders) {
-    res.json(serviceProviders);
-  });
-})
-
 //route to get the Service Providers Companies Name
 app.get("/serviceProviders", (req, res) => {
   ServiceProvider.find(function (err, serviceProviders) {
@@ -301,6 +294,13 @@ app.get("/serviceProviders", (req, res) => {
       res.json(serviceProviders);
     }
   })
+})
+
+//route to get current user Service Provider Profiles
+app.get("/serviceProvidersById/:id", (req, res) => {
+  ServiceProvider.find({user: [req.params.id]}, function (err, serviceProviders) {
+    res.json(serviceProviders);
+  });
 })
 
 //route to find the Service Provider by Companies Name
@@ -320,7 +320,7 @@ app.get("/categories/:name", (req, res) => {
 
 
 //find category by id
-app.get("/categories/:id", (req, res) => {
+app.get("/categoriesById/:id", (req, res) => {
   Category.findById(req.params.id, function(err, onecategory) {
     res.json(onecategory);
   });
